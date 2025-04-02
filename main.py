@@ -7,6 +7,13 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+from aiogram.types import ReplyKeyboardRemove, \
+    ReplyKeyboardMarkup, KeyboardButton, \
+    InlineKeyboardMarkup, InlineKeyboardButton
+
+
+
+
 from dotenv import load_dotenv
 import os
 
@@ -21,7 +28,27 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 scheduler = AsyncIOScheduler()
 
+# Keyboard -------------------------------------------------------
 
+
+@dp.message(Command("start"))
+async def cmd_start(message: types.Message):
+    kb = [
+        [
+            types.KeyboardButton(text="SSL & Domain"),
+            types.KeyboardButton(text="Другое")
+        ],
+    ]
+    keyboard = types.ReplyKeyboardMarkup(
+        keyboard=kb,
+        resize_keyboard=True,
+        input_field_placeholder="Выберите группу подписок"
+    )
+    await message.answer("Выберите группу подписок?", reply_markup=keyboard)
+
+
+
+# End keyboard ---------------------------------------------------
 
 
 def load_subscriptions():
@@ -78,10 +105,12 @@ async def check_subscriptions():
 # На команду /start декоратор передает управление send_subscriptions
 # В subscriptions_info передаем выполнение check_subscriptions()
 # Ну и выводми subscriptions_info
-@dp.message(Command("start"))
-async def send_subscriptions(message: Message):
-    subscriptions_info = await check_subscriptions()
-    await message.answer(subscriptions_info)
+#@dp.message(Command("start"))
+#async def send_subscriptions(message: Message):
+#    subscriptions_info = await check_subscriptions()
+#    await message.answer(subscriptions_info)
+
+
 
 
 
