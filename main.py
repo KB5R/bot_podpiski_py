@@ -49,7 +49,7 @@ async def cmd_start(message: types.Message):
 
 
 # End keyboard ---------------------------------------------------
-
+# https://mastergroosha.github.io/aiogram-3-guide/buttons/
 
 def load_subscriptions():
     """Загружает подписки из TOML-файла."""
