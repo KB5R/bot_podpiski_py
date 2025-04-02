@@ -39,7 +39,9 @@ scheduler = AsyncIOScheduler()
 async def cmd_start(message: types.Message):
     kb = [
         [
-            types.KeyboardButton(text="SSL & Domain"),
+            types.KeyboardButton(text="SSL"),
+            types.KeyboardButton(text="Domain"),
+            types.KeyboardButton(text="Средства защиты"),
             types.KeyboardButton(text="Другое")
         ],
     ]
@@ -58,7 +60,7 @@ async def send_subscriptions(message: Message):
     subscriptions_info = await check_subscriptions()
     await message.answer(subscriptions_info)
 
-@dp.message(F.text.lower() == "ssl & domain")
+@dp.message(F.text.lower() == "ssl")
 async def send_subscriptions_ssl(message: Message):
     subscriptions_info = await check_subscriptions_ssl()
     await message.answer(subscriptions_info)
