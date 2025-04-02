@@ -7,9 +7,15 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-TOKEN = ""
-CHAT_ID = ""
-TOML_FILE = "subscriptions.toml"
+from dotenv import load_dotenv
+import os
+
+load_dotenv() # Загрузка .env
+
+
+TOKEN = os.getenv("TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
+TOML_FILE = os.getenv("TOML_FILE")
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -72,7 +78,6 @@ async def send_subscriptions(message: Message):
 
 # Еще не протестировал
 async def on_startup():
-    """Запуск планировщика при старте бота."""
     scheduler.add_job(check_subscriptions, "cron", hour=10, minute=0)
     scheduler.start()
     logging.info("Планировщик запущен.")
@@ -83,6 +88,8 @@ async def main():
     await on_startup()
     logging.info("Бот запущен.")
     await dp.start_polling(bot)
+
+#-----------------------------------------------------------------------
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
