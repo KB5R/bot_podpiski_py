@@ -58,26 +58,27 @@ async def send_subscriptions(message: Message):
     subscriptions_info = await check_subscriptions()
     await message.answer(subscriptions_info)
 
-
+@dp.message(F.text.lower() == "ssl & domain")
+async def send_subscriptions_ssl(message: Message):
+    subscriptions_info = await check_subscriptions_ssl()
+    await message.answer(subscriptions_info)
 # End keyboard ---------------------------------------------------
 
 
 
-# TOML Config ----------------------------------------------------
-# TOML для типа "Другое"
+
+
+#Other------------------------------------------------------------------
+
 def load_subscriptions():
     """Загружает подписки из TOML-файла."""
     try:
         data = toml.load(TOML_FILE_OTHER)
-        return data.get("subscriptions", {})
+        return data.get("other", {})
     except Exception as e:
         logging.error(f"Ошибка загрузки TOML: {e}")
         return {}
 
-
-
-
-# Toml end ------------------------------------------------------
 
 
 
@@ -115,6 +116,63 @@ async def check_subscriptions():
         message_parts.extend(expiring_soon)
 
     return "\n".join(message_parts)
+
+#Ens Other-------------------------------------------------------------------------------
+
+# SSL ---------------------------------------------------------------------------------
+
+def load_subscriptions_ssl():
+    """Загружает подписки из TOML-файла."""
+    try:
+        data = toml.load(TOML_FILE_OTHER)
+        return data.get("ssl", {})
+    except Exception as e:
+        logging.error(f"Ошибка загрузки TOML: {e}")
+        return {}
+
+
+
+
+async def check_subscriptions_ssl():
+    today = datetime.today().date()      # Получаем дату без времени
+    subscriptions = load_subscriptions_ssl() # Загрузка TOML
+
+    if not subscriptions:                # Если нет подписок
+        return "Нет активных подписок."
+
+    all_subs = []       # Списки для подписок с датам конца
+    expiring_soon = []  # Если меньше 30 дней пишем сюда
+
+    # expires - дата окончания подписки
+    # today   - текущая дата
+
+
+
+    for sub in subscriptions.values():
+
+        name = sub["name"]
+        expires = datetime.strptime(sub["expires"], "%Y-%m-%d").date()
+        days_left = (expires - today).days                                 # expires - today — разница между датами и .days получаем дни из timedelta
+
+        all_subs.append(f"{name}: истекает {expires} ({days_left} дней)")  # .append() = добавления элемента в конец списка
+
+        if days_left <= 30: # Если <= 30 то сохроняем в expiring_soon
+            expiring_soon.append(f"⚠ {name}: {days_left} дней до окончания!")
+
+
+    message_parts = ["📋 Все подписки:"] + all_subs
+
+    if expiring_soon:
+        message_parts.append("\n⏳ Скоро истекают:")
+        message_parts.extend(expiring_soon)
+
+    return "\n".join(message_parts)
+
+
+
+# END SSL -----------------------------------------------------------------------------
+
+
 
 
 
