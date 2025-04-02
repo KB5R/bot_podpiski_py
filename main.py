@@ -37,34 +37,40 @@ def load_subscriptions():
 
 
 async def check_subscriptions():
-    today = datetime.today().date() # Получаем дату без времени
+    today = datetime.today().date()      # Получаем дату без времени
     subscriptions = load_subscriptions() # Загрузка TOML
 
-    if not subscriptions: # Если нет подписок то возврощаем "Нет активных подписок"
-        logging.warning("Нет подписок для проверки.") 
+    if not subscriptions:                # Если нет подписок
         return "Нет активных подписок."
 
     all_subs = []       # Списки для подписок с датам конца
     expiring_soon = []  # Если меньше 30 дней пишем сюда
 
+    # expires - дата окончания подписки
+    # today   - текущая дата
+
+
+
     for sub in subscriptions.values():
-        try:
-            name = sub["name"]
-            expires = datetime.strptime(sub["expires"], "%Y-%m-%d").date()
-            days_left = (expires - today).days
 
-            all_subs.append(f"{name}: истекает {expires} ({days_left} дней)")
+        name = sub["name"]
+        expires = datetime.strptime(sub["expires"], "%Y-%m-%d").date()
+        days_left = (expires - today).days                                 # expires - today — разница между датами и .days получаем дни из timedelta
 
-            if days_left <= 30:
-                expiring_soon.append(f"⚠ {name}: {days_left} дней до окончания!")
-        except Exception as e:
-            logging.error(f"Ошибка обработки подписки {sub}: {e}")
+        all_subs.append(f"{name}: истекает {expires} ({days_left} дней)")  # .append() = добавления элемента в конец списка
 
-    message = "📋 Все подписки:\n" + "\n".join(all_subs)
+        if days_left <= 30: # Если <= 30 то сохроняем в expiring_soon
+            expiring_soon.append(f"⚠ {name}: {days_left} дней до окончания!")
+
+
+    message_parts = ["📋 Все подписки:"] + all_subs
+
     if expiring_soon:
-        message += "\n\n⏳ Скоро истекают:\n" + "\n".join(expiring_soon)
-    
-    return message
+        message_parts.append("\n⏳ Скоро истекают:")
+        message_parts.extend(expiring_soon)
+
+    return "\n".join(message_parts)
+
 
 
 
@@ -76,16 +82,9 @@ async def send_subscriptions(message: Message):
 
 
 
-# Еще не протестировал
-async def on_startup():
-    scheduler.add_job(check_subscriptions, "cron", hour=10, minute=0)
-    scheduler.start()
-    logging.info("Планировщик запущен.")
-
 
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
-    await on_startup()
     logging.info("Бот запущен.")
     await dp.start_polling(bot)
 
