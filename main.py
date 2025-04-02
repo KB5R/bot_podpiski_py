@@ -1,4 +1,5 @@
 import toml
+import os
 import asyncio
 import logging
 from datetime import datetime
@@ -10,7 +11,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
-
+from aiogram import F
 
 
 
@@ -22,14 +23,17 @@ load_dotenv() # Загрузка .env
 
 TOKEN = os.getenv("TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
-TOML_FILE = os.getenv("TOML_FILE")
+TOML_FILE_OTHER = os.getenv("TOML_FILE_OTHER")
+
+print(os.path.abspath(TOML_FILE_OTHER))
+
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 scheduler = AsyncIOScheduler()
 
 # Keyboard -------------------------------------------------------
-
+# https://mastergroosha.github.io/aiogram-3-guide/buttons/
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
@@ -47,19 +51,33 @@ async def cmd_start(message: types.Message):
     await message.answer("Выберите группу подписок?", reply_markup=keyboard)
 
 
+# В subscriptions_info передаем выполнение check_subscriptions()
+# Ну и выводми subscriptions_info
+@dp.message(F.text.lower() == "другое")
+async def send_subscriptions(message: Message):
+    subscriptions_info = await check_subscriptions()
+    await message.answer(subscriptions_info)
+
 
 # End keyboard ---------------------------------------------------
-# https://mastergroosha.github.io/aiogram-3-guide/buttons/
 
+
+
+# TOML Config ----------------------------------------------------
+# TOML для типа "Другое"
 def load_subscriptions():
     """Загружает подписки из TOML-файла."""
     try:
-        data = toml.load(TOML_FILE)
+        data = toml.load(TOML_FILE_OTHER)
         return data.get("subscriptions", {})
     except Exception as e:
         logging.error(f"Ошибка загрузки TOML: {e}")
         return {}
 
+
+
+
+# Toml end ------------------------------------------------------
 
 
 
@@ -97,21 +115,6 @@ async def check_subscriptions():
         message_parts.extend(expiring_soon)
 
     return "\n".join(message_parts)
-
-
-
-
-# Обработчик для отправки списка по кнопке /start
-# На команду /start декоратор передает управление send_subscriptions
-# В subscriptions_info передаем выполнение check_subscriptions()
-# Ну и выводми subscriptions_info
-#@dp.message(Command("start"))
-#async def send_subscriptions(message: Message):
-#    subscriptions_info = await check_subscriptions()
-#    await message.answer(subscriptions_info)
-
-
-
 
 
 
