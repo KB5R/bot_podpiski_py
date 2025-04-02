@@ -1,5 +1,13 @@
 # Telegram Bot for tracking subscriptions
 
+### Example of .env
+```
+TOKEN = "123456789:ABCD-123123123"
+CHAT_ID = "12345678"
+TOML_FILE = "./subscriptions.toml"
+```
+
+
 ### Example of subscriptions.toml
 
 ```toml
