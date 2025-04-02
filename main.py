@@ -75,6 +75,9 @@ async def check_subscriptions():
 
 
 # Обработчик для отправки списка по кнопке /start
+# На команду /start декоратор передает управление send_subscriptions
+# В subscriptions_info передаем выполнение check_subscriptions()
+# Ну и выводми subscriptions_info
 @dp.message(Command("start"))
 async def send_subscriptions(message: Message):
     subscriptions_info = await check_subscriptions()
@@ -88,7 +91,7 @@ async def main():
     logging.info("Бот запущен.")
     await dp.start_polling(bot)
 
-#-----------------------------------------------------------------------
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
