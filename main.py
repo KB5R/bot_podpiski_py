@@ -50,7 +50,9 @@ async def cmd_start(message: types.Message):
         resize_keyboard=True,
         input_field_placeholder="Выберите группу подписок"
     )
+
     await message.answer("Выберите группу подписок?", reply_markup=keyboard)
+
 
 
 # В subscriptions_info передаем выполнение check_subscriptions()
@@ -60,15 +62,21 @@ async def send_subscriptions(message: Message):
     subscriptions_info = await check_subscriptions()
     await message.answer(subscriptions_info)
 
+
+
 @dp.message(F.text.lower() == "ssl")
 async def send_subscriptions_ssl(message: Message):
     subscriptions_info = await check_subscriptions_ssl()
     await message.answer(subscriptions_info)
 # End keyboard ---------------------------------------------------
 
+# Обработчики ----------------------------------------------------
+# Обработчик /start находится в поле keyboard
 
-
-
+@dp.message(Command("id"))
+async def id_user(message: Message):
+    message_user_id = message.from_user.id
+    await message.answer(str(message_user_id))
 
 #Other------------------------------------------------------------------
 
