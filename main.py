@@ -80,7 +80,7 @@ async def id_user(message: Message):
 # Other
 @dp.message(F.text.lower() == "другое")
 async def send_subscriptions(message: Message):
-    subscriptions_info = check_subscriptions_orher()
+    subscriptions_info = check_subscriptions_other()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
@@ -115,7 +115,7 @@ async def send_all_subscriptions(message: Message):
     message_user_id = message.from_user.id
     if str(message_user_id) in ADMIN_ID:
         # Получаю все подписки
-        subscriptions_info_other = check_subscriptions_orher()
+        subscriptions_info_other = check_subscriptions_other()
         subscriptions_info_ssl = check_subscriptions_ssl()
         subscriptions_info_domain = check_subscriptions_domain()
         subscriptions_info_firewall = check_subscriptions_firewall()
@@ -146,7 +146,7 @@ def load_subscriptions():
 
 
 
-def check_subscriptions_orher():
+def check_subscriptions_other():
     today = datetime.today().date()      # Получаем дату без времени
     subscriptions = load_subscriptions() # Загрузка TOML
 
