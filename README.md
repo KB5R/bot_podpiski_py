@@ -1,5 +1,11 @@
 # Telegram Bot for tracking subscriptions
 
+## Quick start
+
+```
+pip install -r requirements.txt
+```
+
 ### Example of .env
 ```
 TOKEN = "123456789:ABCD-123123123"
