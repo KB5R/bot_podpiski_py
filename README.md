@@ -28,3 +28,27 @@ Spotify: истекает 2025-05-02 (30 дней)
 ⚠️ Netflix: 8 дней до окончания!
 ⚠️ Spotify: 30 дней до окончания!
 ```
+
+### Авторизация 
+
+```python
+    if if ADMIN_ID == str(message.from_user.id):
+        await message.answer("Выберите группу подписок?", reply_markup=keyboard)
+    else:
+        await message.answer("Вы не прошли авторизацию")
+```
+**Вот такой способ подходит если ADMIN_ID хранит только одно id**
+**Пример**
+```
+ADMIN_ID = "123456"
+```
+**Но если хотим что бы у нас было несколько ADMIN_ID и все работало используйте**
+```python
+    if str(message.from_user.id) in ADMIN_ID:
+        await message.answer("Выберите группу подписок?", reply_markup=keyboard)
+    else:
+        await message.answer("Вы не прошли авторизацию")
+```
+```
+ADMIN_ID = {"123123","311231"}
+```

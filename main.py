@@ -52,12 +52,23 @@ async def cmd_start(message: types.Message):
         resize_keyboard=True,
         input_field_placeholder="Выберите группу подписок"
     )
-    if ADMIN_ID == str(message.from_user.id):
+    if str(message.from_user.id) in ADMIN_ID:
         await message.answer("Выберите группу подписок?", reply_markup=keyboard)
     else:
         await message.answer("Вы не прошли авторизацию")
 
 
+
+# End keyboard ---------------------------------------------------
+
+# Обработчики ----------------------------------------------------
+# Обработчик /start находится в поле keyboard
+
+# Обработчик /id
+@dp.message(Command("id"))
+async def id_user(message: Message):
+    message_user_id = message.from_user.id
+    await message.answer(str(message_user_id))
 
 
 # В subscriptions_info передаем выполнение check_subscriptions()
@@ -65,23 +76,20 @@ async def cmd_start(message: types.Message):
 @dp.message(F.text.lower() == "другое")
 async def send_subscriptions(message: Message):
     subscriptions_info = await check_subscriptions()
-    await message.answer(subscriptions_info)
+    if str(message.from_user.id) in ADMIN_ID:
+        await message.answer(subscriptions_info)
 
 
-
+# Добавил авторизацию 
 @dp.message(F.text.lower() == "ssl")
 async def send_subscriptions_ssl(message: Message):
     subscriptions_info = await check_subscriptions_ssl()
-    await message.answer(subscriptions_info)
-# End keyboard ---------------------------------------------------
+    if str(message.from_user.id) in ADMIN_ID:
+        await message.answer(subscriptions_info)
 
-# Обработчики ----------------------------------------------------
-# Обработчик /start находится в поле keyboard
 
-@dp.message(Command("id"))
-async def id_user(message: Message):
-    message_user_id = message.from_user.id
-    await message.answer(str(message_user_id))
+# End обработчики -----------------------------------------------------
+
 
 #Other------------------------------------------------------------------
 
