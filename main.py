@@ -24,7 +24,9 @@ load_dotenv() # Загрузка .env
 TOKEN = os.getenv("TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 TOML_FILE_OTHER = os.getenv("TOML_FILE_OTHER")
+ADMIN_ID = os.getenv("ADMIN_ID")
 
+print(ADMIN_ID)
 print(os.path.abspath(TOML_FILE_OTHER))
 
 
@@ -50,8 +52,11 @@ async def cmd_start(message: types.Message):
         resize_keyboard=True,
         input_field_placeholder="Выберите группу подписок"
     )
+    if ADMIN_ID == str(message.from_user.id):
+        await message.answer("Выберите группу подписок?", reply_markup=keyboard)
+    else:
+        await message.answer("Вы не прошли авторизацию")
 
-    await message.answer("Выберите группу подписок?", reply_markup=keyboard)
 
 
 
