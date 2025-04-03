@@ -10,6 +10,7 @@ pip install -r requirements.txt
 ```
 TOKEN = "123456789:ABCD-123123123"
 CHAT_ID = "12345678"
+ADMIN_ID = {"1234123","00120001"}
 TOML_FILE = "./subscriptions.toml"
 ```
 
