@@ -42,10 +42,12 @@ async def cmd_start(message: types.Message):
     kb = [
         [
             types.KeyboardButton(text="SSL"),
-            types.KeyboardButton(text="Domain"),
-            types.KeyboardButton(text="Средства защиты"),
-            types.KeyboardButton(text="Другое")
+            types.KeyboardButton(text="Domain")
         ],
+        [
+            types.KeyboardButton(text="Firewall"),
+            types.KeyboardButton(text="Другое")
+        ]
     ]
     keyboard = types.ReplyKeyboardMarkup(
         keyboard=kb,
@@ -93,6 +95,13 @@ async def send_subscriptions_ssl(message: Message):
 @dp.message(F.text.lower() == "domain")
 async def send_subscriptions_domain(message: Message):
     subscriptions_info = await check_subscriptions_domain()
+    if str(message.from_user.id) in ADMIN_ID:
+        await message.answer(subscriptions_info)
+
+# FIREWALL
+@dp.message(F.text.lower() == "firewall")
+async def send_subscriptions_firewall(message: Message):
+    subscriptions_info = await check_subscriptions_firewall()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
@@ -253,6 +262,57 @@ async def check_subscriptions_domain():
     return "\n".join(message_parts)
 
 # END Domain---------------------------------------------------------------------------
+
+# FIREWALL ---------------------------------------------------------------------
+
+def load_subscriptions_firewall():
+    try:
+        data = toml.load(TOML_FILE_OTHER)
+        return data.get("firewall", {})
+    except Exception as e:
+        logging.error(f"Ошибка загрузки TOML: {e}")
+        return {}
+
+
+
+
+async def check_subscriptions_firewall():
+    today = datetime.today().date()      # Получаем дату без времени
+    subscriptions = load_subscriptions_firewall() # Загрузка TOML
+
+    if not subscriptions:                # Если нет подписок
+        return "Нет активных подписок."
+
+    all_subs = []       # Списки для подписок с датам конца
+    expiring_soon = []  # Если меньше 30 дней пишем сюда
+
+    # expires - дата окончания подписки
+    # today   - текущая дата
+
+
+
+    for sub in subscriptions.values():
+
+        name = sub["name"]
+        expires = datetime.strptime(sub["expires"], "%Y-%m-%d").date()
+        days_left = (expires - today).days                                 # expires - today — разница между датами и .days получаем дни из timedelta
+
+        all_subs.append(f"{name}: истекает {expires} ({days_left} дней)")  # .append() = добавления элемента в конец списка
+
+        if days_left <= 30: # Если <= 30 то сохроняем в expiring_soon
+            expiring_soon.append(f"⚠ {name}: {days_left} дней до окончания!")
+
+
+    message_parts = ["📋 Все Domain:"] + all_subs
+
+    if expiring_soon:
+        message_parts.append("\n⏳ Скоро истекают:")
+        message_parts.extend(expiring_soon)
+
+    return "\n".join(message_parts)
+
+
+# END FIREWALL -----------------------------------------------------------------
 
 
 async def main():
