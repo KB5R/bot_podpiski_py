@@ -80,7 +80,7 @@ async def id_user(message: Message):
 # Other
 @dp.message(F.text.lower() == "другое")
 async def send_subscriptions(message: Message):
-    subscriptions_info = await check_subscriptions_orher()
+    subscriptions_info = check_subscriptions_orher()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
@@ -89,21 +89,21 @@ async def send_subscriptions(message: Message):
 # SSL
 @dp.message(F.text.lower() == "ssl")
 async def send_subscriptions_ssl(message: Message):
-    subscriptions_info = await check_subscriptions_ssl()
+    subscriptions_info = check_subscriptions_ssl()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
 # DOMAIN
 @dp.message(F.text.lower() == "domain")
 async def send_subscriptions_domain(message: Message):
-    subscriptions_info = await check_subscriptions_domain()
+    subscriptions_info = check_subscriptions_domain()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
 # FIREWALL
 @dp.message(F.text.lower() == "firewall")
 async def send_subscriptions_firewall(message: Message):
-    subscriptions_info = await check_subscriptions_firewall()
+    subscriptions_info = check_subscriptions_firewall()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
@@ -115,10 +115,10 @@ async def send_all_subscriptions(message: Message):
     message_user_id = message.from_user.id
     if str(message_user_id) in ADMIN_ID:
         # Получаю все подписки
-        subscriptions_info_other = await check_subscriptions_orher()
-        subscriptions_info_ssl = await check_subscriptions_ssl()
-        subscriptions_info_domain = await check_subscriptions_domain()
-        subscriptions_info_firewall = await check_subscriptions_firewall()
+        subscriptions_info_other = check_subscriptions_orher()
+        subscriptions_info_ssl = check_subscriptions_ssl()
+        subscriptions_info_domain = check_subscriptions_domain()
+        subscriptions_info_firewall = check_subscriptions_firewall()
         # В одно сообщение
         all_subscriptions_info = (
             f"\n{subscriptions_info_other}\n\n"
@@ -146,7 +146,7 @@ def load_subscriptions():
 
 
 
-async def check_subscriptions_orher():
+def check_subscriptions_orher():
     today = datetime.today().date()      # Получаем дату без времени
     subscriptions = load_subscriptions() # Загрузка TOML
 
@@ -197,7 +197,7 @@ def load_subscriptions_ssl():
 
 
 
-async def check_subscriptions_ssl():
+def check_subscriptions_ssl():
     today = datetime.today().date()      # Получаем дату без времени
     subscriptions = load_subscriptions_ssl() # Загрузка TOML
 
@@ -250,7 +250,7 @@ def load_subscriptions_domain():
 
 
 
-async def check_subscriptions_domain():
+def check_subscriptions_domain():
     today = datetime.today().date()      # Получаем дату без времени
     subscriptions = load_subscriptions_domain() # Загрузка TOML
 
@@ -300,7 +300,7 @@ def load_subscriptions_firewall():
 
 
 
-async def check_subscriptions_firewall():
+def check_subscriptions_firewall():
     today = datetime.today().date()      # Получаем дату без времени
     subscriptions = load_subscriptions_firewall() # Загрузка TOML
 
