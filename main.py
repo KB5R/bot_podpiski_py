@@ -35,8 +35,7 @@ dp = Dispatcher()
 scheduler = AsyncIOScheduler()
 
 # Keyboard -------------------------------------------------------
-# https://mastergroosha.github.io/aiogram-3-guide/buttons/
-
+# https://mastergroosha.github.io/aiogram-3-guide/buttons/  Ru Tutor
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     kb = [
@@ -47,6 +46,9 @@ async def cmd_start(message: types.Message):
         [
             types.KeyboardButton(text="Firewall"),
             types.KeyboardButton(text="Другое")
+        ],
+        [
+            types.KeyboardButton(text="Все подписки")
         ]
     ]
     keyboard = types.ReplyKeyboardMarkup(
@@ -55,7 +57,7 @@ async def cmd_start(message: types.Message):
         input_field_placeholder="Выберите группу подписок"
     )
     if str(message.from_user.id) in ADMIN_ID:
-        await message.answer("Выберите группу подписок?", reply_markup=keyboard)
+        await message.answer("Выберите группу подписок", reply_markup=keyboard)
     else:
         await message.answer("Вы не прошли авторизацию")
 
@@ -104,6 +106,28 @@ async def send_subscriptions_firewall(message: Message):
     subscriptions_info = await check_subscriptions_firewall()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
+
+
+# ALL
+
+@dp.message(F.text.lower() == "все подписки")
+async def send_all_subscriptions(message: Message):
+    message_user_id = message.from_user.id
+    if str(message_user_id) in ADMIN_ID:
+        # Получаю все подписки
+        subscriptions_info_other = await check_subscriptions_orher()
+        subscriptions_info_ssl = await check_subscriptions_ssl()
+        subscriptions_info_domain = await check_subscriptions_domain()
+        subscriptions_info_firewall = await check_subscriptions_firewall()
+        # В одно сообщение
+        all_subscriptions_info = (
+            f"\n{subscriptions_info_other}\n\n"
+            f"\n{subscriptions_info_ssl}\n\n"
+            f"\n{subscriptions_info_domain}\n\n"
+            f"\n{subscriptions_info_firewall}\n\n"
+        )
+        
+        await message.answer(all_subscriptions_info)
 
 # End обработчики -----------------------------------------------------
 
@@ -303,7 +327,7 @@ async def check_subscriptions_firewall():
             expiring_soon.append(f"⚠ {name}: {days_left} дней до окончания!")
 
 
-    message_parts = ["📋 Все Domain:"] + all_subs
+    message_parts = ["📋 Все :"] + all_subs
 
     if expiring_soon:
         message_parts.append("\n⏳ Скоро истекают:")
