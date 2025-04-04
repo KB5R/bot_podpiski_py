@@ -1,21 +1,17 @@
 import asyncio
-from aiogram import  F, Router, types
-from aiogram.filters import Command
-from aiogram.types import Message
 import toml
 from dotenv import load_dotenv
 import os
-from datetime import datetime
 import logging
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from aiogram import  F, Router, types
 from aiogram.filters import Command
 from aiogram.types import Message
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
+from aiogram import F
+from datetime import datetime
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram import F
-
 load_dotenv() # Загрузка .env
 
 
@@ -33,15 +29,15 @@ route = Router()
 async def cmd_sub_company_1(message: types.Message):
     kb = [
         [
-            types.KeyboardButton(text="SSL"),
-            types.KeyboardButton(text="Domain")
+            types.KeyboardButton(text="SSL_N"),
+            types.KeyboardButton(text="Domain_N")
         ],
         [
-            types.KeyboardButton(text="Firewall"),
-            types.KeyboardButton(text="Другое")
+            types.KeyboardButton(text="Firewall_N"),
+            types.KeyboardButton(text="Другое_N")
         ],
         [
-            types.KeyboardButton(text="Все подписки")
+            types.KeyboardButton(text="Все подписки_N")
         ],
         [
             types.KeyboardButton(text="Назад")
@@ -83,7 +79,7 @@ async def send_subscriptions(message: Message):
 
 
 
-@route.message(F.text.lower() == "другое")
+@route.message(F.text.lower() == "другое_n")
 async def send_subscriptions(message: Message):
     subscriptions_info = check_subscriptions_other()
     if str(message.from_user.id) in ADMIN_ID:
@@ -92,21 +88,21 @@ async def send_subscriptions(message: Message):
 
 # Добавил авторизацию 
 # SSL
-@route.message(F.text.lower() == "ssl")
+@route.message(F.text.lower() == "ssl_n")
 async def send_subscriptions_ssl(message: Message):
     subscriptions_info = check_subscriptions_ssl()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
 # DOMAIN
-@route.message(F.text.lower() == "domain")
+@route.message(F.text.lower() == "domain_n")
 async def send_subscriptions_domain(message: Message):
     subscriptions_info = check_subscriptions_domain()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
 # FIREWALL
-@route.message(F.text.lower() == "firewall")
+@route.message(F.text.lower() == "firewall_n")
 async def send_subscriptions_firewall(message: Message):
     subscriptions_info = check_subscriptions_firewall()
     if str(message.from_user.id) in ADMIN_ID:
@@ -115,7 +111,7 @@ async def send_subscriptions_firewall(message: Message):
 
 # ALL
 
-@route.message(F.text.lower() == "все подписки")
+@route.message(F.text.lower() == "все подписки_n")
 async def send_all_subscriptions(message: Message):
     message_user_id = message.from_user.id
     if str(message_user_id) in ADMIN_ID:
