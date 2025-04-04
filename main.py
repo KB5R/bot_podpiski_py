@@ -14,7 +14,9 @@ from aiogram.types import ReplyKeyboardRemove, \
 from aiogram import F
 
 from handlers_company1 import route
-
+from handlers_company2 import route2
+from handlers_company3 import route3
+from handlers_company4 import route4
 from dotenv import load_dotenv
 import os
 
@@ -26,10 +28,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 TOML_FILE_OTHER = os.getenv("TOML_FILE_OTHER")
 ADMIN_ID = os.getenv("ADMIN_ID")
 
-COMPANY1 = os.getenv("COMPANY1")
-COMPANY2 = os.getenv("COMPANY2")
-COMPANY3 = os.getenv("COMPANY3")
-COMPANY4 = os.getenv("COMPANY4")
+
 
 print(ADMIN_ID)
 print(os.path.abspath(TOML_FILE_OTHER))
@@ -67,9 +66,7 @@ async def cmd_sub_company(message: types.Message):
 
 # End keyboard ---------------------------------------------------
 # Connect Company-------------------------------------------------
-@dp.message(F.text.lower() == "company")
-async def id_user(message: Message):
-    await message.answer("Вы выбрали СOMPANY1")
+
 
 # END Con Company
 
@@ -77,6 +74,9 @@ async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     logging.info("Бот запущен.")
     dp.include_router(route)
+    dp.include_router(route2)
+    dp.include_router(route3)
+    dp.include_router(route4)
     await dp.start_polling(bot)
 
 @dp.message(F.text.lower() == "назад")

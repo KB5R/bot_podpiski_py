@@ -20,24 +20,24 @@ CHAT_ID = os.getenv("CHAT_ID")
 TOML_FILE_OTHER = os.getenv("TOML_FILE_OTHER")
 ADMIN_ID = os.getenv("ADMIN_ID")
 
-route = Router()
+route2 = Router()
 
 
 
 
-@route.message(F.text.lower() == "company1")
+@route2.message(F.text.lower() == "company2")
 async def cmd_sub_company_1(message: types.Message):
     kb = [
         [
-            types.KeyboardButton(text="SSL_N"),
-            types.KeyboardButton(text="Domain_N")
+            types.KeyboardButton(text="SSL_I"),
+            types.KeyboardButton(text="Domain_I")
         ],
         [
-            types.KeyboardButton(text="Firewall_N"),
-            types.KeyboardButton(text="Другое_N")
+            types.KeyboardButton(text="DNS_I"),
+            types.KeyboardButton(text="Другое_I")
         ],
         [
-            types.KeyboardButton(text="Все подписки_N")
+            types.KeyboardButton(text="Все подписки_I")
         ],
         [
             types.KeyboardButton(text="Назад")
@@ -56,30 +56,20 @@ async def cmd_sub_company_1(message: types.Message):
 
 
 
-
-
-
 # Обработчики ----------------------------------------------------
 # Обработчик /start находится в поле keyboard
-
-# Обработчик /id
-@route.message(Command("id"))
-async def id_user(message: Message):
-    message_user_id = message.from_user.id
-    await message.answer(str(message_user_id))
-
 
 # В subscriptions_info передаем выполнение check_subscriptions()
 # Ну и выводми subscriptions_info
 # Other
-@route.message(F.text.lower() == "назад")
+@route2.message(F.text.lower() == "назад")
 async def send_subscriptions(message: Message):
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer("Выберите группу подписок",cmd_sub_company_1)
 
 
 
-@route.message(F.text.lower() == "другое_n")
+@route2.message(F.text.lower() == "другое_i")
 async def send_subscriptions(message: Message):
     subscriptions_info = check_subscriptions_other()
     if str(message.from_user.id) in ADMIN_ID:
@@ -88,21 +78,21 @@ async def send_subscriptions(message: Message):
 
 # Добавил авторизацию 
 # SSL
-@route.message(F.text.lower() == "ssl_n")
+@route2.message(F.text.lower() == "ssl_i")
 async def send_subscriptions_ssl(message: Message):
     subscriptions_info = check_subscriptions_ssl()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
 # DOMAIN
-@route.message(F.text.lower() == "domain_n")
+@route2.message(F.text.lower() == "domain_i")
 async def send_subscriptions_domain(message: Message):
     subscriptions_info = check_subscriptions_domain()
     if str(message.from_user.id) in ADMIN_ID:
         await message.answer(subscriptions_info)
 
 # FIREWALL
-@route.message(F.text.lower() == "firewall_n")
+@route2.message(F.text.lower() == "dns_i")
 async def send_subscriptions_firewall(message: Message):
     subscriptions_info = check_subscriptions_firewall()
     if str(message.from_user.id) in ADMIN_ID:
@@ -111,7 +101,7 @@ async def send_subscriptions_firewall(message: Message):
 
 # ALL
 
-@route.message(F.text.lower() == "все подписки_n")
+@route2.message(F.text.lower() == "все подписки_i")
 async def send_all_subscriptions(message: Message):
     message_user_id = message.from_user.id
     if str(message_user_id) in ADMIN_ID:
@@ -139,7 +129,7 @@ def load_subscriptions():
     """Загружает подписки из TOML-файла."""
     try:
         data = toml.load(TOML_FILE_OTHER)
-        return data.get("other", {})
+        return data.get("other_i", {})
     except Exception as e:
         logging.error(f"Ошибка загрузки TOML: {e}")
         return {}
@@ -190,7 +180,7 @@ def load_subscriptions_ssl():
     """Загружает подписки из TOML-файла."""
     try:
         data = toml.load(TOML_FILE_OTHER)
-        return data.get("ssl", {})
+        return data.get("ssl_i", {})
     except Exception as e:
         logging.error(f"Ошибка загрузки TOML: {e}")
         return {}
@@ -243,7 +233,7 @@ def check_subscriptions_ssl():
 def load_subscriptions_domain():
     try:
         data = toml.load(TOML_FILE_OTHER)
-        return data.get("domain", {})
+        return data.get("domain_i", {})
     except Exception as e:
         logging.error(f"Ошибка загрузки TOML: {e}")
         return {}
@@ -293,7 +283,7 @@ def check_subscriptions_domain():
 def load_subscriptions_firewall():
     try:
         data = toml.load(TOML_FILE_OTHER)
-        return data.get("firewall", {})
+        return data.get("dns_i", {})
     except Exception as e:
         logging.error(f"Ошибка загрузки TOML: {e}")
         return {}
@@ -328,7 +318,7 @@ def check_subscriptions_firewall():
             expiring_soon.append(f"⚠ {name}: {days_left} дней до окончания!")
 
 
-    message_parts = ["📋 Все cредства защиты:"] + all_subs
+    message_parts = ["📋 Все :"] + all_subs
 
     if expiring_soon:
         message_parts.append("\n⏳ Скоро истекают:")
