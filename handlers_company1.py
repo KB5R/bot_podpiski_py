@@ -1,5 +1,5 @@
 import asyncio
-from aiogram import  F, Router
+from aiogram import  F, Router, types
 from aiogram.filters import Command
 from aiogram.types import Message
 import toml
@@ -7,6 +7,15 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 import logging
+from aiogram.filters import Command
+from aiogram.types import Message
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+from aiogram.types import ReplyKeyboardRemove, \
+    ReplyKeyboardMarkup, KeyboardButton, \
+    InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import F
+
 load_dotenv() # Загрузка .env
 
 
@@ -16,6 +25,42 @@ TOML_FILE_OTHER = os.getenv("TOML_FILE_OTHER")
 ADMIN_ID = os.getenv("ADMIN_ID")
 
 route = Router()
+
+
+
+
+@route.message(F.text.lower() == "company1")
+async def cmd_sub_company_1(message: types.Message):
+    kb = [
+        [
+            types.KeyboardButton(text="SSL"),
+            types.KeyboardButton(text="Domain")
+        ],
+        [
+            types.KeyboardButton(text="Firewall"),
+            types.KeyboardButton(text="Другое")
+        ],
+        [
+            types.KeyboardButton(text="Все подписки")
+        ],
+        [
+            types.KeyboardButton(text="Назад")
+        ]
+    ]
+    keyboard = types.ReplyKeyboardMarkup(
+        keyboard=kb,
+        resize_keyboard=True,
+        input_field_placeholder="Выберите группу подписок"
+    )
+    if str(message.from_user.id) in ADMIN_ID:
+        await message.answer("Выберите группу подписок", reply_markup=keyboard)
+    else:
+        await message.answer("Вы не прошли авторизацию")
+
+
+
+
+
 
 
 # Обработчики ----------------------------------------------------
@@ -31,6 +76,13 @@ async def id_user(message: Message):
 # В subscriptions_info передаем выполнение check_subscriptions()
 # Ну и выводми subscriptions_info
 # Other
+@route.message(F.text.lower() == "назад")
+async def send_subscriptions(message: Message):
+    if str(message.from_user.id) in ADMIN_ID:
+        await message.answer("Выберите группу подписок",cmd_sub_company_1)
+
+
+
 @route.message(F.text.lower() == "другое")
 async def send_subscriptions(message: Message):
     subscriptions_info = check_subscriptions_other()
